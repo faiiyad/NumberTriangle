@@ -88,8 +88,16 @@ public class NumberTriangle {
      *
      */
     public int retrieve(String path) {
-        // TODO implement this method
-        return -1;
+        // implement this method
+        NumberTriangle curr = this;
+        for (char c : path.toCharArray()) {
+            if (c == 'l') {
+                curr = curr.left;
+            } else if (c == 'r') {
+                curr = curr.right;
+            }
+        }
+        return curr.root;
     }
 
     /** Read in the NumberTriangle structure from a file.
@@ -118,34 +126,25 @@ public class NumberTriangle {
         NumberTriangle top = null;
         NumberTriangle[] prevRow = null;
 
-        String line = br.readLine();
-        while (line != null) {
-
-            String[] numbers = line.trim().split(" ");
+        String line;
+        while ((line = br.readLine()) != null) {
+            String[] numbers = line.trim().split("\\s+");
             NumberTriangle[] currRow = new NumberTriangle[numbers.length];
+
             for (int i = 0; i < numbers.length; i++) {
                 currRow[i] = new NumberTriangle(Integer.parseInt(numbers[i]));
-
-                if (prevRow != null) {
-                    // connect left parent if exists
-                    if (i - 1 >= 0) {
-                        currRow[i].setLeft(prevRow[i - 1]);
-                    }
-                    // connect right parent if exists
-                    if (i < prevRow.length) {
-                        currRow[i].setRight(prevRow[i]);
-                    }
-                }
             }
 
-            if (top == null) {
+            if (prevRow != null) {
+                for (int i = 0; i < prevRow.length; i++) {
+                    prevRow[i].setLeft(currRow[i]);
+                    prevRow[i].setRight(currRow[i + 1]);
+                }
+            } else {
                 top = currRow[0];
             }
 
             prevRow = currRow;
-
-            //read the next line
-            line = br.readLine();
         }
         br.close();
         return top;
